@@ -1,0 +1,112 @@
+<!doctype>
+<html>
+
+<head>
+<style>
+	body {
+		margin: 0;
+		padding: 0;
+	}
+
+	#gallery {
+		width: 500px;
+		height: 400px;
+		overflow: hidden;
+		display: flex;
+		align-items: center;
+		border-radius: 4px;
+		background-color: rgba(128, 128, 128, 0.2);
+	}
+	
+	#gallery img {
+		display: inline-block;
+		flex: none;
+		width: 500px;
+		height: 400px;
+		object-fit: contain;
+		transition: margin-left 0.6s;
+	}
+</style>
+<script>
+	const galleryWidth = 500;
+	let currentImage = 1;
+
+	function prev() {
+		const length = document.getElementsByTagName('img').length;
+		
+		if (currentImage === 1) {
+			const images = document.getElementsByTagName('img');
+			const gallery = document.getElementById('gallery');
+			
+			// copy
+			const imagesArray = Array.prototype.slice.call(images, 0);
+			const clones = imagesArray.map(image => image.cloneNode(true));
+			clones[0].style.marginLeft = `-${galleryWidth * length}px`;
+			gallery.prepend(...clones);
+			// move
+			setTimeout(() => {
+				clones[0].style.marginLeft = `-${galleryWidth * (length - 1)}px`;
+			}, 0);
+			// remove image after sliding
+			const handleTransitionEnd = () => {
+				const images = document.getElementsByTagName('img');
+				const toRemove = Array.prototype.slice.call(images, length);
+				toRemove.forEach(image => image.remove());
+				clones[0].removeEventListener('transitionend', handleTransitionEnd);
+			};
+			clones[0].addEventListener('transitionend', handleTransitionEnd);
+			
+			currentImage = length;
+			return;	
+		}
+	
+		currentImage--;
+		const img = document.getElementsByTagName('img')[0];
+		img.style.marginLeft = `-${galleryWidth * (currentImage-1)}px`;
+	}
+	
+	function next() {
+		const length = document.getElementsByTagName('img').length;
+		
+		if (currentImage === length) {
+			const images = document.getElementsByTagName('img');
+			const gallery = document.getElementById('gallery');
+			
+			// copy
+			Array.prototype.forEach.call(images, image => {
+				const clone = image.cloneNode(true);
+				clone.style.marginLeft = 0;
+				gallery.append(clone)
+			});
+			// move
+			images[0].style.marginLeft = `-${galleryWidth * currentImage}px`;
+			// remove image after sliding
+			const handleTransitionEnd = () => {
+				const images = document.getElementsByTagName('img');
+				const toRemove = Array.prototype.slice.call(images, 0, length);
+				toRemove.forEach(image => image.remove());
+				images[0].removeEventListener('transitionend', handleTransitionEnd);
+			}
+			images[0].addEventListener('transitionend', handleTransitionEnd);
+			
+			currentImage = 1;
+			return;	
+		}
+		
+		const img = document.getElementsByTagName('img')[0];
+		img.style.marginLeft = `-${galleryWidth * currentImage}px`;
+		currentImage++;
+	}
+</script>
+</head>
+
+<body>
+	<div id="gallery">
+		<img src="1.jpg" />
+		<img src="2.jpg" />
+		<img src="3.jpg" />
+	</div>
+	<button onclick="prev()">Prev</button>
+	<button onclick="next()">Next</button>
+</body>
+</html>

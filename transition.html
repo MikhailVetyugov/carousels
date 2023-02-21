@@ -1,0 +1,112 @@
+<!doctype>
+<html>
+
+<head>
+<style>
+	body {
+		margin: 0;
+		padding: 0;
+	}
+
+	#gallery {
+		position: relative;
+		width: 500px;
+		height: 400px;
+		overflow: hidden;
+		border-radius: 4px;
+		background-color: rgba(128, 128, 128, 0.2);
+	}
+	
+	#gallery img {
+		position: absolute;
+		top: 0;
+		left: 0;
+		display: block;
+		width: 500px;
+		height: 400px;
+		object-fit: contain;
+		transform: translateX(100%);
+		transition: transform 0.6s;
+	}
+	
+	#gallery img:first-child {
+		transform: translateX(0);
+	}
+	
+	#gallery img:last-child {
+		transform: translateX(-100%);
+	}
+	
+	.link {
+		display: block;
+		margin-top: 30px;
+	}
+</style>
+</head>
+
+<body>
+	<div id="gallery">
+		<img src="1.jpg" />
+		<img src="2.jpg" />
+		<img src="3.jpg" />
+	</div>
+	<button onclick="prev()">Prev</button>
+	<button onclick="next()">Next</button>
+	<a href="https://dev.to/wparad/making-an-infinite-css-carousel-2dek" class="link">Just useful link</a>
+</body>
+<script>
+	let current = 0;
+	const images = document.getElementsByTagName('img');
+	
+	function next() {
+		const currentImg = images[current];
+		
+		if (current === images.length - 1) {
+			current = 0;
+		} else {
+			current++;
+		}
+	
+		const nextImg = images[current];
+		
+		currentImg.style.transform = 'translateX(-100%)';
+		nextImg.style.transform = 'translateX(0)';
+		
+		// Prepare the next image to animation.
+		if (current === images.length - 1) {
+			translateXWithoutAnimation(0, '100%');
+		} else {
+			translateXWithoutAnimation(current + 1, '100%');
+		}
+	}
+	
+	function prev() {
+		const currentImg = images[current];
+		
+		if (current === 0) {
+			current = images.length - 1;
+		} else {
+			current--;
+		}
+	
+		const prevImg = images[current];
+		
+		currentImg.style.transform = 'translateX(100%)';
+		prevImg.style.transform = 'translateX(0)';
+		
+		if (current === 0) {
+			translateXWithoutAnimation(images.length - 1, '-100%');
+		} else {
+			translateXWithoutAnimation(current - 1, '-100%');
+		}
+	}
+	
+	function translateXWithoutAnimation(index, value) {
+		images[index].style.transform = `translateX(${value})`;
+		images[index].style['transition-duration'] = '0s';
+		window.requestAnimationFrame(() => images[index].style['transition-duration'] = '0.6s');
+	}
+	
+	// TODO: Wait for an animation before starting the next one.
+</script>
+</html>
